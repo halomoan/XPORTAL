@@ -18,12 +18,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->group(function(){
+
+ //Route::apiResources(['user' => 'API\UserController']);
+
+Route::group(['middleware' => ['auth:sanctum']],function(){
     Route::group([
-        'prefix' => 'manage',
-        'as' => 'manage'
-    ], function(){
-        //admin Route
-    });
+            'prefix' => 'manage',
+            'as' => 'manage'
+        ], function(){
+            //admin Route
+            Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
+        });
 
 });

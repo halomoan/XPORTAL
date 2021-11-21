@@ -20,3 +20,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::prefix('manage')->group(function () {
+    Route::get('home', [App\Http\Controllers\HomeController::class, 'manage'])->name('manage.home');
+    Route::any('{path}', [App\Http\Controllers\HomeController::class, 'manage']);
+});
