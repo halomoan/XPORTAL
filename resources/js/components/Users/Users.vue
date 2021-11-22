@@ -23,13 +23,15 @@
                                         type="text"
                                         name="table_search"
                                         class="form-control float-right"
-                                        placeholder="Search"
+                                        placeholder="Search Name Or Email"
+                                        v-model="searchText"
                                     />
 
                                     <div class="input-group-append">
                                         <button
-                                            type="submit"
+                                            type="button"
                                             class="btn btn-default"
+                                            @click="searchTable"
                                         >
                                             <i class="fas fa-search"></i>
                                         </button>
@@ -47,6 +49,7 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Role</th>
                                     <th>Registered At</th>
                                     <th>Action</th>
                                 </tr>
@@ -56,6 +59,7 @@
                                     <td>{{ user.id }}</td>
                                     <td>{{ user.name }}</td>
                                     <td>{{ user.email }}</td>
+                                    <td>{{ user.role }}</td>
                                     <td>
                                         {{ user.created_at | humanDate }}
                                     </td>
@@ -97,12 +101,14 @@
 </template>
 
 <script>
+const USER_API_URI = "/api/manage/user?";
+
 export default {
     data() {
         return {
             users: {},
             pgUsers: {
-                uri: "/api/manage/user?",
+                uri: USER_API_URI,
                 page: 1,
                 perpage: 10,
                 records: 0,
@@ -113,6 +119,7 @@ export default {
                     },
                 },
             },
+            searchText: "",
         };
     },
     methods: {
@@ -127,6 +134,38 @@ export default {
                     this.pgUsers.page = data.current_page;
                     this.pgUsers.perpage = data.per_page;
                 });
+        },
+        searchTable() {
+            if (this.$Role.isAdmin()) {
+                if (this.searchText) {
+                    this.pgUsers.uri =
+                        USER_API_URI +
+                        "name=" +
+                        this.searchText +
+                        "&email=" +
+                        this.searchText +
+                        "&page=";
+                } else {
+                    this.pgUsers.uri = USER_API_URI + "page=1";
+                }
+                this.$Progress.start();
+                axios
+                    .get(this.pgUsers.uri)
+                    .then(({ data }) => {
+                        this.users = data.data;
+                        this.pgUsers.records = data.total;
+                        this.pgUsers.page = data.current_page;
+                        this.pgUsers.perpage = data.per_page;
+                        this.$Progress.finish();
+                    })
+                    .catch(() => {
+                        Toast.fire({
+                            icon: "error",
+                            title: "Something is wrong. Failed to search.",
+                        });
+                        this.$Progress.fail();
+                    });
+            }
         },
         addNewUser() {
             this.$router.push({ path: "/manage/userd", query: {} });

@@ -348,6 +348,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <p>Dashboard</p>
                                 </router-link>
                             </li>
+
                             <li class="nav-item menu-open">
                                 <a href="#" class="nav-link">
                                     <i
@@ -359,6 +360,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
+                                    @can('manage-users')
                                     <li class="nav-item">
                                         <router-link
                                             to="/manage/users"
@@ -375,8 +377,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <p>Users</p>
                                         </router-link>
                                     </li>
+                                    @endcan
                                 </ul>
                             </li>
+
                             <li class="nav-item">
                                 <router-link
                                     to="/manage/profile"
@@ -444,6 +448,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="content">
                     <div class="container-fluid">
                         <router-view></router-view>
+                        <vue-progress-bar></vue-progress-bar>
                     </div>
                     <!-- /.container-fluid -->
                 </div>

@@ -40,6 +40,13 @@ const router = new VueRouter({
 
 Vue.component("pagination", require("vue-pagination-2"));
 
+import VueProgressBar from "vue-progressbar";
+Vue.use(VueProgressBar, {
+    color: "rgb(143, 255, 199)",
+    failedColor: "red",
+    height: "2px",
+});
+
 import moment from "moment";
 Vue.filter("humanDate", function (date) {
     return moment(date).format("MMM Do YYYY");
