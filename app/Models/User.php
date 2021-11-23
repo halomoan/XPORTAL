@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Utilities\FilterBuilder;
+use App\Traits\FilterTrait;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+
+    use HasApiTokens, HasFactory, Notifiable,FilterTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -43,14 +44,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function scopeFilterBy($query, $filters)
-    {
-        $namespace = 'App\Utilities\UserFilters';
-        $filter = new \App\Utilities\FilterBuilder($query, $filters, $namespace);
+    // public function scopeFilterBy($query, $filters)
+    // {
+    //     $namespace = 'App\Utilities\UserFilters';
+    //     $filter = new \App\Utilities\FilterBuilder($query, $filters, $namespace);
 
-        return $filter->apply();
+    //     return $filter->apply();
 
-    }
+    // }
 
     public function profile()
     {
