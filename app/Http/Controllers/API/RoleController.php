@@ -4,9 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
+use \Spatie\Permission\Models\Role;
 
-class UserController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,19 +15,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        //return User::latest()->paginate(10);
-        //return User::filterBy($request->all())->paginate(10);
 
         $request = request();
 
         $filterOR = $request->{'FilterOR'} ? $request->{'FilterOR'} : "false";
 
         $filters = [
-                   'App\Utilities\StringFilter:qname,users,' . $filterOR,
-                   'App\Utilities\StringFilter:qemail,users,' . $filterOR
+            'App\Utilities\StringFilter:qname,roles,' . $filterOR
         ];
 
-        return User::query()->filter($filters)->paginate(10);
+        return Role::query()->filter($filters)->paginate(10);
     }
 
     /**
@@ -38,7 +35,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,[
+            'name' => 'required|string|max:125|unique:roles'
+        ]);
+
+        return Role::create([
+            'name' => $request['name']
+        ]);
     }
 
     /**

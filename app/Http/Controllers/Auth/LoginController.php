@@ -60,7 +60,7 @@ class LoginController extends Controller
             // if success login
 
            return redirect()
-            ->intended(route('manage.home'))
+            ->intended(route('manage'))
             ->with('status','You are Logged in as Admin!');
         }
 

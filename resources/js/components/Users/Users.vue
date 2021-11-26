@@ -10,7 +10,7 @@
                             <div class="d-flex align-content-between">
                                 <a href="#" @click.prevent="addNewUser">
                                     <i
-                                        class="fa fa-user-plus pr-2"
+                                        class="fa fa-plus pr-3"
                                         title="Add New User"
                                     ></i>
                                 </a>
@@ -125,7 +125,7 @@ export default {
     methods: {
         getTableData(page) {
             let filter = "";
-
+            this.$Progress.start();
             axios
                 .get(this.pgUsers.uri + filter + "&page=" + page)
                 .then(({ data }) => {
@@ -133,6 +133,7 @@ export default {
                     this.pgUsers.records = data.total;
                     this.pgUsers.page = data.current_page;
                     this.pgUsers.perpage = data.per_page;
+                    this.$Progress.finish();
                 });
         },
         searchTable() {
@@ -174,6 +175,9 @@ export default {
 
     mounted() {
         this.getTableData(1);
+        Fire.$on("AfterCreated", () => {
+            this.getTableData(1);
+        });
     },
 };
 </script>

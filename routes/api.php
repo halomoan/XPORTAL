@@ -18,9 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
-
- //Route::apiResources(['user' => 'API\UserController']);
+//Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
 
 Route::group(['middleware' => ['auth:sanctum']],function(){
     Route::group([
@@ -29,6 +27,7 @@ Route::group(['middleware' => ['auth:sanctum']],function(){
         ], function(){
             //admin Route
             Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
+            Route::apiResources(['role' => 'App\Http\Controllers\API\RoleController']);
         });
 
 });

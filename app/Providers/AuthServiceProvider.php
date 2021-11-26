@@ -17,11 +17,6 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
     ];
 
-    public static $permissions = [
-        'manage-users' => ['admin'],
-        'view-invoices' => ['admin', 'customer']
-    ];
-
     /**
      * Register any authentication / authorization services.
      *
@@ -30,24 +25,5 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        Gate::before(
-                function ($user, $ability) {
-                    if ($user->role === 'admin') {
-                        return true;
-                    }
-                }
-        );
-
-        foreach (self::$permissions as $action=> $roles) {
-            Gate::define(
-                $action,
-                function (User $user) use ($roles) {
-                    if (in_array($user->role, $roles)) {
-                        return true;
-                    }
-                }
-            );
-        }
     }
 }

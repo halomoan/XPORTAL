@@ -31,6 +31,10 @@ const routes = [
         path: "/manage/userd",
         component: require("./components/Users/UserDetail.vue").default,
     },
+    {
+        path: "/manage/roles",
+        component: require("./components/Roles/Roles.vue").default,
+    },
 ];
 
 const router = new VueRouter({
@@ -73,6 +77,8 @@ Vue.filter("humanDate", function (date) {
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+import Vue from "vue";
+
 import Swal from "sweetalert2";
 window.Swal = Swal;
 
@@ -87,6 +93,11 @@ const Toast = Swal.mixin({
         toast.addEventListener("mouseleave", Swal.resumeTimer);
     },
 });
+
+window.Toast = Toast;
+
+const Fire = new Vue();
+window.Fire = Fire;
 
 const app = new Vue({
     el: "#app",
