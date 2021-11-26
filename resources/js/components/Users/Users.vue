@@ -101,7 +101,7 @@
 </template>
 
 <script>
-const USER_API_URI = "/api/manage/user?";
+const USER_API_URI = '/api/manage/user?'
 
 export default {
     data() {
@@ -115,69 +115,69 @@ export default {
                 options: {
                     chunksNavigation: scroll,
                     texts: {
-                        count: "|||",
-                    },
-                },
+                        count: '|||'
+                    }
+                }
             },
-            searchText: "",
-        };
+            searchText: ''
+        }
     },
     methods: {
         getTableData(page) {
-            let filter = "";
-            this.$Progress.start();
+            let filter = ''
+            this.$Progress.start()
             axios
-                .get(this.pgUsers.uri + filter + "&page=" + page)
+                .get(this.pgUsers.uri + filter + '&page=' + page)
                 .then(({ data }) => {
-                    this.users = data.data;
-                    this.pgUsers.records = data.total;
-                    this.pgUsers.page = data.current_page;
-                    this.pgUsers.perpage = data.per_page;
-                    this.$Progress.finish();
-                });
+                    this.users = data.data
+                    this.pgUsers.records = data.total
+                    this.pgUsers.page = data.current_page
+                    this.pgUsers.perpage = data.per_page
+                    this.$Progress.finish()
+                })
         },
         searchTable() {
             if (this.$Role.isAdmin()) {
                 if (this.searchText) {
                     this.pgUsers.uri =
                         USER_API_URI +
-                        "name=" +
+                        'qname=' +
                         this.searchText +
-                        "&email=" +
+                        '&qemail=' +
                         this.searchText +
-                        "&page=";
+                        '&FilterOR=true&page='
                 } else {
-                    this.pgUsers.uri = USER_API_URI + "page=1";
+                    this.pgUsers.uri = USER_API_URI + 'page=1'
                 }
-                this.$Progress.start();
+                this.$Progress.start()
                 axios
                     .get(this.pgUsers.uri)
                     .then(({ data }) => {
-                        this.users = data.data;
-                        this.pgUsers.records = data.total;
-                        this.pgUsers.page = data.current_page;
-                        this.pgUsers.perpage = data.per_page;
-                        this.$Progress.finish();
+                        this.users = data.data
+                        this.pgUsers.records = data.total
+                        this.pgUsers.page = data.current_page
+                        this.pgUsers.perpage = data.per_page
+                        this.$Progress.finish()
                     })
                     .catch(() => {
                         Toast.fire({
-                            icon: "error",
-                            title: "Something is wrong. Failed to search.",
-                        });
-                        this.$Progress.fail();
-                    });
+                            icon: 'error',
+                            title: 'Something is wrong. Failed to search.'
+                        })
+                        this.$Progress.fail()
+                    })
             }
         },
         addNewUser() {
-            this.$router.push({ path: "/manage/userd", query: {} });
-        },
+            this.$router.push({ path: '/manage/userd', query: {} })
+        }
     },
 
     mounted() {
-        this.getTableData(1);
-        Fire.$on("AfterCreated", () => {
-            this.getTableData(1);
-        });
-    },
-};
+        this.getTableData(1)
+        Fire.$on('AfterCreated', () => {
+            this.getTableData(1)
+        })
+    }
+}
 </script>
