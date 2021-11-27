@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
+Route::apiResources(['perm' => 'App\Http\Controllers\API\PermController']);
 
 Route::group(['middleware' => ['auth:sanctum']],function(){
     Route::group([
@@ -28,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']],function(){
             //admin Route
             Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
             Route::apiResources(['role' => 'App\Http\Controllers\API\RoleController']);
+            Route::apiResources(['perm' => 'App\Http\Controllers\API\PermController']);
         });
 
 });

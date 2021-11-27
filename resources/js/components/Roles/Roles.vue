@@ -287,9 +287,9 @@ export default {
             if (this.$Role.isAdmin()) {
                 if (this.searchText) {
                     this.pgRoles.uri =
-                        ROLE_API_URI + 'qname=' + this.searchText + '&page='
+                        ROLE_API_URI + '?qname=' + this.searchText + '&page='
                 } else {
-                    this.pgRoles.uri = ROLE_API_URI + 'page=1'
+                    this.pgRoles.uri = ROLE_API_URI + '?page=1'
                 }
                 this.$Progress.start()
                 axios
