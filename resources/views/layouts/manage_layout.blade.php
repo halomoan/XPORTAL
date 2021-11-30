@@ -389,7 +389,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                     text-pink
                                                 "
                                             ></i>
-                                            <p>Roles</p>
+                                            <p>Roles & Permissions</p>
                                         </router-link>
                                     </li>
                                 </ul>
@@ -426,7 +426,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         "
                                     ></i>
                                     <p>
-                                        {{ __("Logout") }}
+                                        {{ __('Logout') }}
                                     </p>
                                 </a>
                             </li>
@@ -499,7 +499,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         @auth
         <script>
             //window.user = { 'role' :  @json(auth()->user()->role) };
-            window.user = { role: "admin" };
+            window.user = { role: 'admin' }
         </script>
         @endauth
 

@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']],function(){
             //admin Route
             Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
             Route::apiResources(['role' => 'App\Http\Controllers\API\RoleController']);
+            Route::get('/role/{id}/permissions',[App\Http\Controllers\API\RoleController::class,'permissions']);
             Route::apiResources(['perm' => 'App\Http\Controllers\API\PermController']);
         });
 

@@ -1,9 +1,18 @@
 <template>
     <div>
         <div v-if="$Role.isAdmin()">
-            <div class="card card-default">
+            <div class="card card-secondary" v-show="role.name != null">
                 <div class="card-header">
-                    <h3 class="card-title mb-0">User Permission</h3>
+                    <h3 class="card-title">{{ role.name }} Permission</h3>
+                    <div class="card-tools">
+                        <button
+                            class="btn btn-secondary btn-sm"
+                            @click="savePermissions"
+                        >
+                            Save
+                        </button>
+                    </div>
+                    <!-- ./card-tools -->
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body table-responsive">
@@ -27,13 +36,17 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr v-for="(item, name) in permissions" :key="name">
+                            <tr
+                                v-for="(item, name) in all_permissions"
+                                :key="name"
+                            >
                                 <td>
                                     <div class="custom-control custom-checkbox">
                                         <input
                                             class="custom-control-input"
                                             type="checkbox"
                                             :id="'view' + item[0].id"
+                                            :value="item[0].id"
                                             v-model="item[0].checked"
                                             v-on:change="setALLCheckBox(0)"
                                         />
@@ -50,6 +63,7 @@
                                             class="custom-control-input"
                                             type="checkbox"
                                             :id="'add' + item[1].id"
+                                            :value="item[1].id"
                                             v-model="item[1].checked"
                                             v-on:change="setALLCheckBox(1)"
                                         />
@@ -66,6 +80,7 @@
                                             class="custom-control-input"
                                             type="checkbox"
                                             :id="'delete' + item[2].id"
+                                            :value="item[2].id"
                                             v-model="item[2].checked"
                                             v-on:change="setALLCheckBox(2)"
                                         />
@@ -89,10 +104,12 @@
 
 <script>
 const PERM_API_URI = '/api/manage/perm'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
-            permissions: {},
+            //role: {},
+            all_permissions: {},
             ALL_VALUES: [
                 { id: 'VIEW_ALL', label: 'View: ALL', checked: false },
                 { id: 'ADD_ALL', label: 'Add: ALL', checked: false },
@@ -110,7 +127,7 @@ export default {
                     data[i].checked = false
                 }
 
-                this.permissions = _.groupBy(data, 'group')
+                this.all_permissions = _.groupBy(data, 'group')
 
                 this.$Progress.finish()
             })
@@ -159,8 +176,49 @@ export default {
             } else {
                 this.ALL_VALUES[idx].checked = false
             }
+        },
+        getPermissions() {},
+        savePermissions() {
+            //console.log(this.permissions)
+            //for (var i = 0; i < this.permissions.length; i++) {}
+
+            const data = _.flatMap(this.all_permissions)
+            console.log(data)
+        },
+        resetPermissions() {
+            _.forEach(this.ALL_VALUES, function (item, key) {
+                item.checked = false
+            })
+
+            _.forEach(this.all_permissions, function (item, key) {
+                for (var i = 0; i < item.length; i++) {
+                    console.log(item[i])
+                    item[i].checked = false
+                }
+            })
+            console.log(this.all_permissions)
         }
     },
+    computed: {
+        ...mapGetters(['role', 'permissions'])
+    },
+
+    watch: {
+        permissions: function (items) {
+            this.resetPermissions()
+            // for (var i = 0; i < items.length; i++) {
+            //     const keyvals = items[i].name.split(' ')
+            //     const group = keyvals[1]
+            //     for (var j = 0; j < this.all_permissions[group].length; j++) {
+            //         if (this.all_permissions[group][j].id === items[i].id) {
+            //             console.log(this.all_permissions[group][j].name)
+            //             this.all_permissions[group][j].checked = true
+            //         }
+            //     }
+            // }
+        }
+    },
+
     created() {
         this.getTableData()
     }

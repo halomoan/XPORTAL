@@ -3,7 +3,7 @@
         <div v-if="$Role.isAdmin()">
             <div class="card card-pink">
                 <div class="card-header">
-                    <h3 class="card-title mb-0">Role</h3>
+                    <h3 class="card-title">Role</h3>
 
                     <div class="card-tools">
                         <div class="d-flex align-content-between">
@@ -64,7 +64,9 @@
                                     <a
                                         href
                                         class="fa fa-edit"
-                                        @click.prevent="editModal(role)"
+                                        @click.prevent="
+                                            getRolePermissions(role)
+                                        "
                                     ></a>
                                     /
                                     <a
@@ -72,6 +74,13 @@
                                         class="fa fa-trash text-danger"
                                         @click.prevent="deleteRole(role.id)"
                                     ></a>
+                                    /
+                                    <a
+                                        href
+                                        class="text-green"
+                                        @click.prevent="renameModal(role)"
+                                        >Rename</a
+                                    >
                                 </td>
                             </tr>
                         </tbody>
@@ -107,7 +116,7 @@
                             Add New Role
                         </h5>
                         <h5 class="modal-title" v-show="editmode">
-                            Update Role
+                            Rename Role
                         </h5>
                         <button
                             type="button"
@@ -165,6 +174,7 @@
 
 <script>
 const ROLE_API_URI = '/api/manage/role'
+import { mapActions } from 'vuex'
 export default {
     data() {
         return {
@@ -190,6 +200,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['getRolePermissions']),
         getTableData(page) {
             let filter = ''
             this.$Progress.start()
@@ -244,7 +255,7 @@ export default {
             this.form.reset()
             $('#RoleModal').modal('show')
         },
-        editModal(role) {
+        renameModal(role) {
             this.editmode = true
             this.form.reset()
             $('#RoleModal').modal('show')

@@ -16,35 +16,8 @@ Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
 import Role from './Role'
+
 Vue.prototype.$Role = new Role(window.user)
-
-import VueRouter from 'vue-router'
-
-Vue.use(VueRouter)
-
-const routes = [
-    {
-        path: '/manage/users',
-        component: require('./components/Users/Users.vue').default
-    },
-    {
-        path: '/manage/userd',
-        component: require('./components/Users/UserDetail.vue').default
-    },
-    // {
-    //     path: '/manage/roles',
-    //     component: require('./components/Roles/Roles.vue').default
-    // },
-    {
-        path: '/manage/roles',
-        component: require('./components/Roles/Role_Permission.vue').default
-    }
-]
-
-const router = new VueRouter({
-    routes, // short for `routes: routes`
-    mode: 'history'
-})
 
 Vue.component('pagination', require('vue-pagination-2'))
 
@@ -103,9 +76,13 @@ window.Toast = Toast
 const Fire = new Vue()
 window.Fire = Fire
 
+import router from './Router'
+import store from './Store'
+
 const app = new Vue({
     el: '#app',
     router,
+    store,
     methods: {
         logout() {
             Swal.fire({
