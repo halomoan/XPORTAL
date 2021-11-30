@@ -26,7 +26,9 @@
                                             type="checkbox"
                                             :id="value.id"
                                             v-model="value.checked"
-                                            v-on:change="setChildrenCheckBox"
+                                            v-on:change="
+                                                setChildrenCheckBox(value.id)
+                                            "
                                         />
                                         <label
                                             :for="value.id"
@@ -37,8 +39,8 @@
                                 </td>
                             </tr>
                             <tr
-                                v-for="(item, name) in all_permissions"
-                                :key="name"
+                                v-for="(item, name, index) in all_permissions"
+                                :key="index"
                             >
                                 <td>
                                     <div class="custom-control custom-checkbox">
@@ -123,6 +125,7 @@ export default {
             axios.get(PERM_API_URI).then(({ data }) => {
                 for (var i = 0; i < data.length; i++) {
                     const keyvals = data[i].name.split(' ')
+                    data[i].action = keyvals[0]
                     data[i].group = keyvals[1]
                     data[i].checked = false
                 }
@@ -132,23 +135,29 @@ export default {
                 this.$Progress.finish()
             })
         },
-        setChildrenCheckBox() {
-            if (this.ALL_VALUES[0].checked) {
-                $("input:checkbox[id^='view']").prop('checked', 'checked')
-            } else {
-                $("input:checkbox[id^='view']").prop('checked', '')
-            }
-
-            if (this.ALL_VALUES[1].checked) {
-                $("input:checkbox[id^='add']").prop('checked', 'checked')
-            } else {
-                $("input:checkbox[id^='add']").prop('checked', '')
-            }
-
-            if (this.ALL_VALUES[2].checked) {
-                $("input:checkbox[id^='delete']").prop('checked', 'checked')
-            } else {
-                $("input:checkbox[id^='delete']").prop('checked', '')
+        setChildrenCheckBox(id) {
+            switch (id) {
+                case 'VIEW_ALL':
+                    if (this.ALL_VALUES[0].checked) {
+                        this._setPermissions(true, 'view')
+                    } else {
+                        this._setPermissions(false, 'view')
+                    }
+                    break
+                case 'ADD_ALL':
+                    if (this.ALL_VALUES[1].checked) {
+                        this._setPermissions(true, 'add')
+                    } else {
+                        this._setPermissions(false, 'add')
+                    }
+                    break
+                case 'DELETE_ALL':
+                    if (this.ALL_VALUES[2].checked) {
+                        this._setPermissions(true, 'delete')
+                    } else {
+                        this._setPermissions(false, 'delete')
+                    }
+                    break
             }
         },
         setALLCheckBox(idx) {
@@ -182,21 +191,29 @@ export default {
             //console.log(this.permissions)
             //for (var i = 0; i < this.permissions.length; i++) {}
 
-            const data = _.flatMap(this.all_permissions)
-            console.log(data)
+            // const data = _.flatMap(this.all_permissions)
+            // console.log(data)
+            this._resetPermissions()
         },
-        resetPermissions() {
+        _setPermissions(checked, action) {
+            _.forEach(this.all_permissions, function (item, key) {
+                for (var i = 0; i < item.length; i++) {
+                    if (item[i].action === action) {
+                        item[i].checked = checked
+                    }
+                }
+            })
+        },
+        _resetPermissions() {
             _.forEach(this.ALL_VALUES, function (item, key) {
                 item.checked = false
             })
 
             _.forEach(this.all_permissions, function (item, key) {
                 for (var i = 0; i < item.length; i++) {
-                    console.log(item[i])
                     item[i].checked = false
                 }
             })
-            console.log(this.all_permissions)
         }
     },
     computed: {
@@ -205,17 +222,16 @@ export default {
 
     watch: {
         permissions: function (items) {
-            this.resetPermissions()
-            // for (var i = 0; i < items.length; i++) {
-            //     const keyvals = items[i].name.split(' ')
-            //     const group = keyvals[1]
-            //     for (var j = 0; j < this.all_permissions[group].length; j++) {
-            //         if (this.all_permissions[group][j].id === items[i].id) {
-            //             console.log(this.all_permissions[group][j].name)
-            //             this.all_permissions[group][j].checked = true
-            //         }
-            //     }
-            // }
+            this._resetPermissions()
+            for (var i = 0; i < items.length; i++) {
+                const keyvals = items[i].name.split(' ')
+                const group = keyvals[1]
+                for (var j = 0; j < this.all_permissions[group].length; j++) {
+                    if (this.all_permissions[group][j].id === items[i].id) {
+                        this.all_permissions[group][j].checked = true
+                    }
+                }
+            }
         }
     },
 
