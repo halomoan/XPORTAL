@@ -18,13 +18,21 @@ class RoleController extends Controller
 
         $request = request();
 
+
+
         $filterOR = $request->{'FilterOR'} ? $request->{'FilterOR'} : "false";
 
         $filters = [
             'App\Utilities\StringFilter:qname,roles,' . $filterOR
         ];
 
-        return Role::query()->filter($filters)->paginate(10);
+        $page = $request->query('page');
+
+        if (isset($page)){
+            return Role::query()->filter($filters)->paginate(10);
+        }else{
+            return Role::query()->filter($filters)->get();
+        }
     }
 
     /**

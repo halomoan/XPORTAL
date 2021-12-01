@@ -54,7 +54,7 @@
                                                         'is-invalid':
                                                             form.errors.has(
                                                                 'name'
-                                                            ),
+                                                            )
                                                     }"
                                                     id="name"
                                                     v-model="form.name"
@@ -83,7 +83,7 @@
                                                         'is-invalid':
                                                             form.errors.has(
                                                                 'email'
-                                                            ),
+                                                            )
                                                     }"
                                                     id="email"
                                                     v-model="form.email"
@@ -115,7 +115,7 @@
                                                             'is-invalid':
                                                                 form.errors.has(
                                                                     'password'
-                                                                ),
+                                                                )
                                                         }"
                                                         name="password"
                                                         v-model="form.password"
@@ -146,7 +146,7 @@
                                                             'is-invalid':
                                                                 form.errors.has(
                                                                     'repassword'
-                                                                ),
+                                                                )
                                                         }"
                                                         name="repassword"
                                                         v-model="
@@ -187,7 +187,7 @@
                                                             'is-invalid':
                                                                 form.errors.has(
                                                                     'billaddr'
-                                                                ),
+                                                                )
                                                         }"
                                                         id="billaddr"
                                                         v-model="form.billaddr"
@@ -243,7 +243,7 @@
                                                 <button
                                                     type="button"
                                                     class="btn btn-primary mb-2"
-                                                    @click.prevent="adduserRole"
+                                                    @click.prevent="addUserRole"
                                                 >
                                                     <i
                                                         class="
@@ -256,7 +256,7 @@
                                                     type="button"
                                                     class="btn btn-secondary"
                                                     @click.prevent="
-                                                        removeuserRole
+                                                        removeUserRole
                                                     "
                                                 >
                                                     <i
@@ -274,7 +274,7 @@
                                                     </label>
                                                     <select
                                                         v-model="
-                                                            roles.checkuserRole
+                                                            roles.checkUserRole
                                                         "
                                                         multiple
                                                         class="form-control"
@@ -341,31 +341,122 @@
 </template>
 
 <script>
+const ROLE_API_URI = '/api/manage/role'
+
 export default {
     data() {
         return {
             form: new Form({
-                id: "",
-                name: "",
-                email: "",
-                password: "",
-                repassword: "",
+                id: '',
+                name: '',
+                email: '',
+                password: '',
+                repassword: '',
                 roles: [],
-                billaddr: "",
+                billaddr: ''
             }),
             roles: {
                 allRoles: [],
                 availRole: [],
                 userRole: [],
                 checkAvailRole: [],
-                checkuserRole: [],
+                checkUserRole: []
             },
             inprogress: false,
-            editMode: false,
-        };
+            editMode: false
+        }
     },
+    methods: {
+        getRoles() {
+            axios
+                .get(ROLE_API_URI)
+                .then(({ data }) => {
+                    this.roles.allRoles = data
+                    this.roles.availRole = this.roles.allRoles.filter(function (
+                        item
+                    ) {
+                        //return item.is_enabled && !item.is_default
+                        return true
+                    })
+                    this.roles.userRole = this.roles.allRoles.filter(function (
+                        item
+                    ) {
+                        //return item.is_default
+                        return false
+                    })
+
+                    //New or Edit User
+                    const userId = this.$route.query.userId
+                    if (typeof userId === 'undefined') {
+                        this.editMode = false
+                        this.form.reset()
+                    } else if (userId) {
+                        this.getUserData(userId)
+                    } else {
+                        this.editMode = false
+                        this.form.reset()
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to retrieve Roles!',
+                        footer: "<a href='/users'>Let me redo again</a>"
+                    })
+                })
+        },
+        addUserRole() {
+            if (!this.roles.availRole.length) {
+                return
+            }
+            let selected = []
+            for (var i in this.roles.checkAvailRole) {
+                const idx = this.roles.checkAvailRole[i]
+
+                selected.push(this.roles.availRole[idx])
+            }
+
+            this.roles.userRole = [
+                //...new Set([...this.groups.userGroup, ...selected])
+                ...this.roles.userRole,
+                ...selected
+            ]
+
+            this.roles.availRole = _.differenceBy(
+                this.roles.availRole,
+                this.roles.userRole,
+                'id'
+            )
+        },
+        removeUserRole() {
+            if (!this.roles.userRole.length) {
+                return
+            }
+            let selected = []
+            for (var i in this.roles.checkUserRole) {
+                const idx = this.roles.checkUserRole[i]
+
+                selected.push(this.roles.userRole[idx])
+            }
+            this.roles.availRole = [
+                //...new Set([...this.groups.availGroup, ...selected])
+                ...this.roles.availRole,
+                ...selected
+            ]
+
+            this.roles.userRole = _.differenceBy(
+                this.roles.userRole,
+                this.roles.availRole,
+                'id'
+            )
+        }
+    },
+
     mounted() {
-        console.log("Component mounted.");
-    },
-};
+        console.log('Component mounted.')
+        this.getRoles()
+    }
+}
 </script>

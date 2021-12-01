@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use \Spatie\Permission\Models\Role;
 use \Spatie\Permission\Models\Permission;
 
 class PermController extends Controller
@@ -27,7 +28,17 @@ class PermController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // abort(404, "The Partner was not found");
+        $role = $request->role;
+        $permissions = $request->permissions;
+
+        if(isset($role)){
+             $role = Role::findOrFail($role);
+             $role->syncPermissions($permissions);
+        }
+
+        return ['message' => 'Success'];
+
     }
 
     /**

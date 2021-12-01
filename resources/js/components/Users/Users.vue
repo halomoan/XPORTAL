@@ -25,6 +25,7 @@
                                         class="form-control float-right"
                                         placeholder="Search Name Or Email"
                                         v-model="searchText"
+                                        v-on:keyup.enter="searchTable"
                                     />
 
                                     <div class="input-group-append">
@@ -170,7 +171,8 @@ export default {
         },
         addNewUser() {
             this.$router.push({ path: '/manage/userd', query: {} })
-        }
+        },
+        editUser(id) {}
     },
 
     mounted() {

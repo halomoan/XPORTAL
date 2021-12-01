@@ -24,6 +24,7 @@
                                     class="form-control float-right"
                                     placeholder="Search"
                                     v-model="searchText"
+                                    v-on:keyup.enter="searchTable"
                                 />
 
                                 <div class="input-group-append">

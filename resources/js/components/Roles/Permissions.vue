@@ -186,14 +186,31 @@ export default {
                 this.ALL_VALUES[idx].checked = false
             }
         },
-        getPermissions() {},
         savePermissions() {
-            //console.log(this.permissions)
-            //for (var i = 0; i < this.permissions.length; i++) {}
+            const permissions = _.chain(this.all_permissions)
+                .flatMap()
+                .filter('checked')
+                .map('id')
+                .value()
 
-            // const data = _.flatMap(this.all_permissions)
-            // console.log(data)
-            this._resetPermissions()
+            const data = { role: this.role.id, permissions }
+
+            axios
+                .post(PERM_API_URI, data)
+                .then(() => {
+                    Swal.fire(
+                        'Updated!',
+                        `Role  ${this.role.name} has been updated.`,
+                        'success'
+                    )
+                })
+                .catch((error) => {
+                    Swal.fire(
+                        'Error!',
+                        `Error occurred on Role  ${this.role.name}.`,
+                        'error'
+                    )
+                })
         },
         _setPermissions(checked, action) {
             _.forEach(this.all_permissions, function (item, key) {

@@ -2304,13 +2304,20 @@ var PERM_API_URI = '/api/manage/perm';
         this.ALL_VALUES[idx].checked = false;
       }
     },
-    getPermissions: function getPermissions() {},
     savePermissions: function savePermissions() {
-      //console.log(this.permissions)
-      //for (var i = 0; i < this.permissions.length; i++) {}
-      // const data = _.flatMap(this.all_permissions)
-      // console.log(data)
-      this._resetPermissions();
+      var _this2 = this;
+
+      var permissions = _.chain(this.all_permissions).flatMap().filter('checked').map('id').value();
+
+      var data = {
+        role: this.role.id,
+        permissions: permissions
+      };
+      axios.post(PERM_API_URI, data).then(function () {
+        Swal.fire('Updated!', "Role  ".concat(_this2.role.name, " has been updated."), 'success');
+      })["catch"](function (error) {
+        Swal.fire('Error!', "Error occurred on Role  ".concat(_this2.role.name, "."), 'error');
+      });
     },
     _setPermissions: function _setPermissions(checked, action) {
       _.forEach(this.all_permissions, function (item, key) {
@@ -2412,6 +2419,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
 //
 //
 //
@@ -2753,6 +2761,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 //
 //
 //
@@ -3095,31 +3115,103 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+var ROLE_API_URI = '/api/manage/role';
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       form: new Form({
-        id: "",
-        name: "",
-        email: "",
-        password: "",
-        repassword: "",
+        id: '',
+        name: '',
+        email: '',
+        password: '',
+        repassword: '',
         roles: [],
-        billaddr: ""
+        billaddr: ''
       }),
       roles: {
         allRoles: [],
         availRole: [],
         userRole: [],
         checkAvailRole: [],
-        checkuserRole: []
+        checkUserRole: []
       },
       inprogress: false,
       editMode: false
     };
   },
+  methods: {
+    getRoles: function getRoles() {
+      var _this = this;
+
+      axios.get(ROLE_API_URI).then(function (_ref) {
+        var data = _ref.data;
+        _this.roles.allRoles = data;
+        _this.roles.availRole = _this.roles.allRoles.filter(function (item) {
+          //return item.is_enabled && !item.is_default
+          return true;
+        });
+        _this.roles.userRole = _this.roles.allRoles.filter(function (item) {
+          //return item.is_default
+          return false;
+        }); //New or Edit User
+
+        var userId = _this.$route.query.userId;
+
+        if (typeof userId === 'undefined') {
+          _this.editMode = false;
+
+          _this.form.reset();
+        } else if (userId) {
+          _this.getUserData(userId);
+        } else {
+          _this.editMode = false;
+
+          _this.form.reset();
+        }
+      })["catch"](function (error) {
+        console.log(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to retrieve Roles!',
+          footer: "<a href='/users'>Let me redo again</a>"
+        });
+      });
+    },
+    addUserRole: function addUserRole() {
+      if (!this.roles.availRole.length) {
+        return;
+      }
+
+      var selected = [];
+
+      for (var i in this.roles.checkAvailRole) {
+        var idx = this.roles.checkAvailRole[i];
+        selected.push(this.roles.availRole[idx]);
+      }
+
+      this.roles.userRole = [].concat(_toConsumableArray(this.roles.userRole), selected);
+      this.roles.availRole = _.differenceBy(this.roles.availRole, this.roles.userRole, 'id');
+    },
+    removeUserRole: function removeUserRole() {
+      if (!this.roles.userRole.length) {
+        return;
+      }
+
+      var selected = [];
+
+      for (var i in this.roles.checkUserRole) {
+        var idx = this.roles.checkUserRole[i];
+        selected.push(this.roles.userRole[idx]);
+      }
+
+      this.roles.availRole = [].concat(_toConsumableArray(this.roles.availRole), selected);
+      this.roles.userRole = _.differenceBy(this.roles.userRole, this.roles.availRole, 'id');
+    }
+  },
   mounted: function mounted() {
-    console.log("Component mounted.");
+    console.log('Component mounted.');
+    this.getRoles();
   }
 });
 
@@ -3136,6 +3228,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
 //
 //
 //
@@ -3308,7 +3401,8 @@ var USER_API_URI = '/api/manage/user?';
         path: '/manage/userd',
         query: {}
       });
-    }
+    },
+    editUser: function editUser(id) {}
   },
   mounted: function mounted() {
     var _this3 = this;
@@ -66330,6 +66424,21 @@ var render = function () {
                         },
                         domProps: { value: _vm.searchText },
                         on: {
+                          keyup: function ($event) {
+                            if (
+                              !$event.type.indexOf("key") &&
+                              _vm._k(
+                                $event.keyCode,
+                                "enter",
+                                13,
+                                $event.key,
+                                "Enter"
+                              )
+                            ) {
+                              return null
+                            }
+                            return _vm.searchTable.apply(null, arguments)
+                          },
                           input: function ($event) {
                             if ($event.target.composing) {
                               return
@@ -67122,7 +67231,7 @@ var render = function () {
                                     on: {
                                       click: function ($event) {
                                         $event.preventDefault()
-                                        return _vm.adduserRole.apply(
+                                        return _vm.addUserRole.apply(
                                           null,
                                           arguments
                                         )
@@ -67145,7 +67254,7 @@ var render = function () {
                                     on: {
                                       click: function ($event) {
                                         $event.preventDefault()
-                                        return _vm.removeuserRole.apply(
+                                        return _vm.removeUserRole.apply(
                                           null,
                                           arguments
                                         )
@@ -67177,9 +67286,9 @@ var render = function () {
                                       {
                                         name: "model",
                                         rawName: "v-model",
-                                        value: _vm.roles.checkuserRole,
+                                        value: _vm.roles.checkUserRole,
                                         expression:
-                                          "\n                                                        roles.checkuserRole\n                                                    ",
+                                          "\n                                                        roles.checkUserRole\n                                                    ",
                                       },
                                     ],
                                     staticClass: "form-control",
@@ -67207,7 +67316,7 @@ var render = function () {
                                             })
                                         _vm.$set(
                                           _vm.roles,
-                                          "checkuserRole",
+                                          "checkUserRole",
                                           $event.target.multiple
                                             ? $$selectedVal
                                             : $$selectedVal[0]
@@ -67446,6 +67555,21 @@ var render = function () {
                       },
                       domProps: { value: _vm.searchText },
                       on: {
+                        keyup: function ($event) {
+                          if (
+                            !$event.type.indexOf("key") &&
+                            _vm._k(
+                              $event.keyCode,
+                              "enter",
+                              13,
+                              $event.key,
+                              "Enter"
+                            )
+                          ) {
+                            return null
+                          }
+                          return _vm.searchTable.apply(null, arguments)
+                        },
                         input: function ($event) {
                           if ($event.target.composing) {
                             return
@@ -84567,7 +84691,7 @@ var index_esm = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_args":[["axios@0.21.4","C:\\\\wamp64\\\\www\\\\XPortal"]],"_from":"axios@0.21.4","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"axios@0.21.4","name":"axios","escapedName":"axios","rawSpec":"0.21.4","saveSpec":null,"fetchSpec":"0.21.4"},"_requiredBy":["#DEV:/"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_spec":"0.21.4","_where":"C:\\\\wamp64\\\\www\\\\XPortal","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
+module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"Promise based HTTP client for the browser and node.js","main":"index.js","scripts":{"test":"grunt test","start":"node ./sandbox/server.js","build":"NODE_ENV=production grunt build","preversion":"npm test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json","postversion":"git push && git push --tags","examples":"node ./examples/server.js","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","fix":"eslint --fix lib/**/*.js"},"repository":{"type":"git","url":"https://github.com/axios/axios.git"},"keywords":["xhr","http","ajax","promise","node"],"author":"Matt Zabriskie","license":"MIT","bugs":{"url":"https://github.com/axios/axios/issues"},"homepage":"https://axios-http.com","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"jsdelivr":"dist/axios.min.js","unpkg":"dist/axios.min.js","typings":"./index.d.ts","dependencies":{"follow-redirects":"^1.14.0"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}]}');
 
 /***/ })
 
