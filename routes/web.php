@@ -17,7 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
+
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -29,7 +30,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 $MANAGE_PERMISSIONS = 'permission:view users|view roles|view dashboard';
 
-Route::group(['middleware' => [$MANAGE_PERMISSIONS]],function(){
+Route::group(['middleware' => ['verified',$MANAGE_PERMISSIONS]],function(){
     Route::group([
             'prefix' => 'manage',
         ], function(){
