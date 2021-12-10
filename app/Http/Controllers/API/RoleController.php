@@ -4,10 +4,17 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use \Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['permission:view roles|add roles|edit roles|delete roles']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +24,6 @@ class RoleController extends Controller
     {
 
         $request = request();
-
-
 
         $filterOR = $request->{'FilterOR'} ? $request->{'FilterOR'} : "false";
 
@@ -43,6 +48,12 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+
+        if(!Auth::user()->hasPermissionTo('add roles')){
+            $message = ['message' => 'You do not have the required authorization.'];
+            return response()->json($message, 422);
+        }
+
         $this->validate($request,[
             'name' => 'required|string|max:125|unique:roles'
         ]);
@@ -78,6 +89,12 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+        if(!Auth::user()->hasPermissionTo('edit roles')){
+            $message = ['message' => 'You do not have the required authorization.'];
+            return response()->json($message, 422);
+        }
+
         $role= Role::findOrFail($id);
         $this->validate($request,[
             'name' => 'required|string|max:125|unique:roles'
@@ -96,6 +113,12 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
+
+        if(!Auth::user()->hasPermissionTo('delete roles')){
+            $message = ['message' => 'You do not have the required authorization.'];
+            return response()->json($message, 422);
+        }
+
         $role = Role::findOrFail($id);
         $role->delete();
 

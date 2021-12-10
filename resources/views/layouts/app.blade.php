@@ -7,15 +7,20 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-        <title>{{ config("app.name", "Laravel") }}</title>
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
 
         <!-- Fonts -->
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-        <link
+        <!-- <link
             href="https://fonts.googleapis.com/css?family=Nunito"
+            rel="stylesheet"
+        /> -->
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300&display=swap"
             rel="stylesheet"
         />
 

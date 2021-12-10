@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid" v-if="$can('view users')">
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -12,6 +12,7 @@
                                     <i
                                         class="fa fa-plus pr-3"
                                         title="Add New User"
+                                        v-show="$can('add users')"
                                     ></i>
                                 </a>
 
@@ -52,7 +53,7 @@
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Registered At</th>
-                                    <th>Action</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,17 +65,27 @@
                                     <td>
                                         {{ user.created_at | humanDate }}
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <a
                                             href
                                             class="fa fa-edit"
                                             @click.prevent="editUser(user.id)"
+                                            v-show="$can('edit users')"
                                         ></a>
-                                        /
+
+                                        <span
+                                            v-show="
+                                                $can('edit users') &&
+                                                $can('delete users')
+                                            "
+                                        >
+                                            /
+                                        </span>
                                         <a
                                             href
                                             class="fa fa-trash text-danger"
                                             @click.prevent="deleteUser(user.id)"
+                                            v-show="$can('delete users')"
                                         ></a>
                                     </td>
                                 </tr>
@@ -138,41 +149,41 @@ export default {
                 })
         },
         searchTable() {
-            if (this.$Role.isAdmin()) {
-                if (this.searchText) {
-                    this.pgUsers.uri =
-                        USER_API_URI +
-                        'qname=' +
-                        this.searchText +
-                        '&qemail=' +
-                        this.searchText +
-                        '&FilterOR=true&page='
-                } else {
-                    this.pgUsers.uri = USER_API_URI + 'page=1'
-                }
-                this.$Progress.start()
-                axios
-                    .get(this.pgUsers.uri)
-                    .then(({ data }) => {
-                        this.users = data.data
-                        this.pgUsers.records = data.total
-                        this.pgUsers.page = data.current_page
-                        this.pgUsers.perpage = data.per_page
-                        this.$Progress.finish()
-                    })
-                    .catch(() => {
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'Something is wrong. Failed to search.'
-                        })
-                        this.$Progress.fail()
-                    })
+            if (this.searchText) {
+                this.pgUsers.uri =
+                    USER_API_URI +
+                    'qname=' +
+                    this.searchText +
+                    '&qemail=' +
+                    this.searchText +
+                    '&FilterOR=true&page='
+            } else {
+                this.pgUsers.uri = USER_API_URI + 'page=1'
             }
+            this.$Progress.start()
+            axios
+                .get(this.pgUsers.uri)
+                .then(({ data }) => {
+                    this.users = data.data
+                    this.pgUsers.records = data.total
+                    this.pgUsers.page = data.current_page
+                    this.pgUsers.perpage = data.per_page
+                    this.$Progress.finish()
+                })
+                .catch(() => {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Something is wrong. Failed to search.'
+                    })
+                    this.$Progress.fail()
+                })
         },
         addNewUser() {
             this.$router.push({ path: '/manage/userd', query: {} })
         },
-        editUser(id) {}
+        editUser(id) {
+            this.$router.push({ path: '/manage/userd', query: { userId: id } })
+        }
     },
 
     mounted() {

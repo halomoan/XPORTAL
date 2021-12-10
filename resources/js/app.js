@@ -15,10 +15,6 @@ import { HasError, AlertError } from 'vform/src/components/bootstrap5'
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
-import Role from './Role'
-
-Vue.prototype.$Role = new Role(window.user)
-
 Vue.component('pagination', require('vue-pagination-2'))
 
 import VueProgressBar from 'vue-progressbar'
@@ -75,6 +71,11 @@ window.Toast = Toast
 
 const Fire = new Vue()
 window.Fire = Fire
+
+//import Role from './Role'
+//Vue.prototype.$Role = new Role(window.user)
+import Permissions from './mixins/Permissions'
+Vue.mixin(Permissions)
 
 import router from './Router'
 import store from './Store'

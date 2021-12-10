@@ -9,6 +9,11 @@ use \Spatie\Permission\Models\Permission;
 
 class PermController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['permission:view roles|edit roles']);
+    }
     /**
      * Display a listing of the resource.
      *

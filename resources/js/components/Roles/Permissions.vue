@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="$Role.isAdmin()">
+        <div v-if="$can('view roles')">
             <div class="card card-secondary" v-show="role.name != null">
                 <div class="card-header">
                     <h3 class="card-title">{{ role.name }} Permission</h3>
@@ -8,6 +8,8 @@
                         <button
                             class="btn btn-secondary btn-sm"
                             @click="savePermissions"
+                            :disabled="noUpdate"
+                            v-show="$can('edit roles')"
                         >
                             Save
                         </button>
@@ -29,6 +31,7 @@
                                             v-on:change="
                                                 setChildrenCheckBox(value.id)
                                             "
+                                            :disabled="noUpdate"
                                         />
                                         <label
                                             :for="value.id"
@@ -51,6 +54,7 @@
                                             :value="item[0].id"
                                             v-model="item[0].checked"
                                             v-on:change="setALLCheckBox(0)"
+                                            :disabled="noUpdate"
                                         />
                                         <label
                                             :for="'view' + item[0].id"
@@ -68,6 +72,7 @@
                                             :value="item[1].id"
                                             v-model="item[1].checked"
                                             v-on:change="setALLCheckBox(1)"
+                                            :disabled="noUpdate"
                                         />
                                         <label
                                             :for="'add' + item[1].id"
@@ -81,15 +86,34 @@
                                         <input
                                             class="custom-control-input"
                                             type="checkbox"
-                                            :id="'delete' + item[2].id"
+                                            :id="'edit' + item[2].id"
                                             :value="item[2].id"
                                             v-model="item[2].checked"
                                             v-on:change="setALLCheckBox(2)"
+                                            :disabled="noUpdate"
                                         />
                                         <label
-                                            :for="'delete' + item[2].id"
+                                            :for="'edit' + item[2].id"
                                             class="custom-control-label"
                                             >{{ item[2].name }}</label
+                                        >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input
+                                            class="custom-control-input"
+                                            type="checkbox"
+                                            :id="'delete' + item[3].id"
+                                            :value="item[3].id"
+                                            v-model="item[3].checked"
+                                            v-on:change="setALLCheckBox(3)"
+                                            :disabled="noUpdate"
+                                        />
+                                        <label
+                                            :for="'delete' + item[3].id"
+                                            class="custom-control-label"
+                                            >{{ item[3].name }}</label
                                         >
                                     </div>
                                 </td>
@@ -115,8 +139,10 @@ export default {
             ALL_VALUES: [
                 { id: 'VIEW_ALL', label: 'View: ALL', checked: false },
                 { id: 'ADD_ALL', label: 'Add: ALL', checked: false },
+                { id: 'EDIT_ALL', label: 'Edit: ALL', checked: false },
                 { id: 'DELETE_ALL', label: 'Delete: ALL', checked: false }
-            ]
+            ],
+            noUpdate: false
         }
     },
     methods: {
@@ -131,7 +157,7 @@ export default {
                 }
 
                 this.all_permissions = _.groupBy(data, 'group')
-
+                this.noUpdate = this.role.name.toUpperCase() === 'ADMIN'
                 this.$Progress.finish()
             })
         },
@@ -151,8 +177,15 @@ export default {
                         this._setPermissions(false, 'add')
                     }
                     break
-                case 'DELETE_ALL':
+                case 'EDIT_ALL':
                     if (this.ALL_VALUES[2].checked) {
+                        this._setPermissions(true, 'edit')
+                    } else {
+                        this._setPermissions(false, 'edit')
+                    }
+                    break
+                case 'DELETE_ALL':
+                    if (this.ALL_VALUES[3].checked) {
                         this._setPermissions(true, 'delete')
                     } else {
                         this._setPermissions(false, 'delete')
@@ -175,6 +208,10 @@ export default {
                     total = $("input:checkbox[id^='add']").length
                     break
                 case 2:
+                    count = $("input:checkbox:checked[id^='edit']").length
+                    total = $("input:checkbox[id^='edit']").length
+                    break
+                case 3:
                     count = $("input:checkbox:checked[id^='delete']").length
                     total = $("input:checkbox[id^='delete']").length
                     break
@@ -249,6 +286,7 @@ export default {
                     }
                 }
             }
+            this.noUpdate = this.role.name.toUpperCase() === 'ADMIN'
         }
     },
 

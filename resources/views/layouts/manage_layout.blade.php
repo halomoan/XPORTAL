@@ -331,7 +331,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         >
                             <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-
+                            @can('view dashboard')
                             <li class="nav-item">
                                 <router-link
                                     to="/manage/dashboard"
@@ -348,7 +348,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <p>Dashboard</p>
                                 </router-link>
                             </li>
-
+                            @endcan
                             <li class="nav-item menu-open">
                                 <a href="#" class="nav-link">
                                     <i
@@ -360,6 +360,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
+                                    @can('view users')
                                     <li class="nav-item">
                                         <router-link
                                             to="/manage/users"
@@ -376,6 +377,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <p>Users</p>
                                         </router-link>
                                     </li>
+                                    @endcan @can('view roles')
                                     <li class="nav-item">
                                         <router-link
                                             to="/manage/roles"
@@ -392,6 +394,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <p>Roles & Permissions</p>
                                         </router-link>
                                     </li>
+                                    @endcan
                                 </ul>
                             </li>
 
@@ -496,12 +499,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <!-- ./wrapper -->
 
-        @auth
         <script>
-            //window.user = { 'role' :  @json(auth()->user()->role) };
-            window.user = { role: 'admin' }
+            @auth
+              window.Permissions = {!! json_encode(Auth::user()->allPermissions, true) !!};
+            @else
+              window.Permissions = [];
+            @endauth
         </script>
-        @endauth
 
         <!-- REQUIRED SCRIPTS -->
         <script src="/js/app.js"></script>

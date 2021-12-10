@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div v-if="$Role.isAdmin()">
+        <div v-if="$can('view users')">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header p-2">
-                            <ul class="nav nav-pills">
+                            <ul id="mainTab" class="nav nav-pills">
                                 <li class="nav-item">
                                     <a
                                         class="nav-link active"
@@ -38,7 +38,7 @@
                                 <div class="tab-content">
                                     <!-- /.tab-pane -->
                                     <div class="tab-pane active" id="general">
-                                        <!-- <form class="form-horizontal" @submit.prevent="createUser"> -->
+                                        <!-- <form class="form-horizontal" @submit.prevent="onCreateUser"> -->
                                         <div class="form-group row">
                                             <label
                                                 for="name"
@@ -90,6 +90,7 @@
                                                     name="email"
                                                     placeholder="Email address"
                                                     required
+                                                    @blur="onEmail"
                                                 />
                                                 <has-error
                                                     :form="form"
@@ -121,6 +122,9 @@
                                                         v-model="form.password"
                                                         placeholder="Password"
                                                         required
+                                                        v-on:keyup="
+                                                            onRepassword()
+                                                        "
                                                     />
                                                     <has-error
                                                         :form="form"
@@ -154,6 +158,9 @@
                                                         "
                                                         placeholder="Re-type Password"
                                                         required
+                                                        v-on:keyup="
+                                                            onRepassword()
+                                                        "
                                                     />
                                                     <has-error
                                                         :form="form"
@@ -168,7 +175,7 @@
                                     <div class="tab-pane" id="billing">
                                         <form
                                             class="form-horizontal"
-                                            @submit.prevent="createUser"
+                                            @submit.prevent="onCreateUser"
                                         >
                                             <div class="form-group row">
                                                 <label
@@ -190,7 +197,10 @@
                                                                 )
                                                         }"
                                                         id="billaddr"
-                                                        v-model="form.billaddr"
+                                                        v-model="
+                                                            form.profile
+                                                                .billaddr
+                                                        "
                                                         name="billaddr"
                                                         placeholder="billaddr"
                                                     />
@@ -318,14 +328,20 @@
                                 Cancel
                             </button>
                             <button
+                                v-if="$can('add users') && !editMode"
                                 type="button"
                                 class="btn btn-info float-right"
-                                @click.prevent="
-                                    editMode ? editUser() : createUser()
-                                "
+                                @click.prevent="onCreateUser()"
                             >
-                                <span v-show="!editMode">Create</span>
-                                <span v-show="editMode">Modify</span>
+                                Create
+                            </button>
+                            <button
+                                v-if="$can('edit users') && editMode"
+                                type="button"
+                                class="btn btn-info float-right"
+                                @click.prevent="onEditUser()"
+                            >
+                                Modify
                             </button>
                         </div>
                     </div>
@@ -341,6 +357,7 @@
 </template>
 
 <script>
+const USER_API_URI = '/api/manage/user'
 const ROLE_API_URI = '/api/manage/role'
 
 export default {
@@ -352,8 +369,10 @@ export default {
                 email: '',
                 password: '',
                 repassword: '',
-                roles: [],
-                billaddr: ''
+                roles: null,
+                profile: {
+                    billaddr: ''
+                }
             }),
             roles: {
                 allRoles: [],
@@ -398,7 +417,6 @@ export default {
                     }
                 })
                 .catch((error) => {
-                    console.log(error)
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -407,6 +425,45 @@ export default {
                     })
                 })
         },
+        getUserData(userId) {
+            this.inprogress = true
+            this.$Progress.start()
+            axios
+                .get(USER_API_URI + '/' + userId)
+                .then(({ data }) => {
+                    this.form = new Form(data)
+
+                    if (data.roles && data.roles.length > 0) {
+                        this.roles.userRole = data.roles
+                        this.roles.availRole = _.differenceBy(
+                            this.roles.availRole,
+                            this.roles.userRole,
+                            'id'
+                        )
+                    } else {
+                        this.roles.userRole = []
+                    }
+
+                    //this.$forceUpdate();
+
+                    this.editMode = true
+                    this.inprogress = false
+                    this.$Progress.finish()
+                })
+                .catch(() => {
+                    this.editMode = false
+                    this.inprogress = false
+                    this.form.reset()
+                    this.$Progress.fail()
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                        footer: "<a href='/users'>Let me redo again</a>"
+                    })
+                })
+        },
+
         addUserRole() {
             if (!this.roles.availRole.length) {
                 return
@@ -419,7 +476,7 @@ export default {
             }
 
             this.roles.userRole = [
-                //...new Set([...this.groups.userGroup, ...selected])
+                //...new Set([...this.roles.userGroup, ...selected])
                 ...this.roles.userRole,
                 ...selected
             ]
@@ -430,6 +487,7 @@ export default {
                 'id'
             )
         },
+
         removeUserRole() {
             if (!this.roles.userRole.length) {
                 return
@@ -451,11 +509,119 @@ export default {
                 this.roles.availRole,
                 'id'
             )
+        },
+        onCreateUser() {
+            this.form.roles = _.map(this.roles.userRole, 'id')
+            this.inprogress = true
+            this.form
+                .post(USER_API_URI)
+                .then(() => {
+                    Fire.$emit('AfterCreated')
+                    this.$Progress.finish()
+                    this.inprogress = false
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'User Created in successfully'
+                    })
+
+                    this.goBack()
+                })
+                .catch((e) => {
+                    this.$Progress.fail()
+                    this.inprogress = false
+                    let message = e.response.data.message
+                    const errors = e.response.data.errors
+
+                    for (const error in errors) {
+                        if (error === 'roles') {
+                            for (const msg in errors[error]) {
+                                message = errors[error][msg]
+                            }
+                            $('#mainTab a[href="#role"]').tab('show')
+                        }
+                    }
+
+                    if (message) {
+                        Swal.fire('Failed!', message, 'warning')
+                    } else {
+                        Swal.fire(
+                            'Failed!',
+                            'There is something wrong.',
+                            'warning'
+                        )
+                    }
+                })
+        },
+        onEditUser() {
+            this.form.roles = _.map(this.roles.userRole, 'id')
+
+            this.$Progress.start()
+            this.inprogress = true
+            this.form
+                .put(USER_API_URI + '/' + this.form.id)
+                .then(() => {
+                    this.$Progress.finish()
+                    this.inprogress = false
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'User modified successfully'
+                    })
+                    this.goBack()
+                })
+                .catch((e) => {
+                    this.$Progress.fail()
+                    this.inprogress = false
+                    let message = e.response.data.message
+                    const errors = e.response.data.errors
+
+                    for (const error in errors) {
+                        if (error === 'roles') {
+                            for (const msg in errors[error]) {
+                                message = errors[error][msg]
+                            }
+                            $('#mainTab a[href="#role"]').tab('show')
+                        }
+                    }
+
+                    if (message) {
+                        Swal.fire('Failed!', message, 'warning')
+                    } else {
+                        Swal.fire(
+                            'Failed!',
+                            'There is something wrong.',
+                            'warning'
+                        )
+                    }
+                })
+        },
+        onEmail() {
+            const errors = this.form.errors
+            if (
+                /^\w+[+.\w-]*@([\w-]+.)*\w+[\w-]*.([a-z]{2,4}|\d+)$/.test(
+                    this.form.email
+                )
+            ) {
+                errors.clear('email')
+            } else {
+                errors.set('email', 'Please enter a valid email address')
+            }
+        },
+        onRepassword() {
+            const errors = this.form.errors
+            if (this.form.password !== this.form.repassword) {
+                errors.set('repassword', 'The password not match')
+            } else {
+                errors.clear('repassword')
+            }
+        },
+        goBack() {
+            window.history.length > 1
+                ? this.$router.go(-1)
+                : this.$router.push('/manage/user')
         }
     },
 
     mounted() {
-        console.log('Component mounted.')
         this.getRoles()
     }
 }

@@ -9,8 +9,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\FilterTrait;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
 
     use HasApiTokens, HasFactory, Notifiable,FilterTrait, HasRoles;
@@ -34,6 +36,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verified_at',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -57,5 +62,10 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function getAllPermissionsAttribute() {
+        $permissions = Auth::user()->getAllPermissions()->pluck('name');
+        return $permissions;
     }
 }

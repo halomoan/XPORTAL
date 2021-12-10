@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="$Role.isAdmin()">
+        <div v-if="$can('view roles')">
             <div class="card card-pink">
                 <div class="card-header">
                     <h3 class="card-title">Role</h3>
@@ -11,6 +11,7 @@
                                 <i
                                     class="fa fa-plus pr-3"
                                     title="Add New Role"
+                                    v-show="$can('add roles')"
                                 ></i>
                             </a>
 
@@ -51,7 +52,7 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Registered At</th>
-                                <th>Action</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,25 +62,46 @@
                                 <td>
                                     {{ role.created_at | humanDate }}
                                 </td>
-                                <td>
-                                    <a
-                                        href
-                                        class="fa fa-edit"
-                                        @click.prevent="
-                                            getRolePermissions(role)
+                                <td class="text-center">
+                                    <span>
+                                        <a
+                                            href
+                                            class="fa fa-edit"
+                                            @click.prevent="
+                                                getRolePermissions(role)
+                                            "
+                                            v-show="$can('edit roles')"
+                                        ></a>
+                                    </span>
+                                    <span
+                                        v-show="
+                                            $can('delete roles') &&
+                                            $can('edit roles')
                                         "
-                                    ></a>
-                                    /
+                                    >
+                                        /
+                                    </span>
+
                                     <a
+                                        v-show="$can('delete roles')"
                                         href
                                         class="fa fa-trash text-danger"
                                         @click.prevent="deleteRole(role.id)"
                                     ></a>
-                                    /
+                                    <span
+                                        v-show="
+                                            $can('delete roles') &&
+                                            $can('edit roles')
+                                        "
+                                    >
+                                        /
+                                    </span>
+
                                     <a
                                         href
                                         class="text-green"
                                         @click.prevent="renameModal(role)"
+                                        v-show="$can('edit roles')"
                                         >Rename</a
                                     >
                                 </td>
@@ -228,7 +250,10 @@ export default {
                     })
                     this.$Progress.finish()
                 })
-                .catch(() => {
+                .catch((e) => {
+                    $('#RoleModal').modal('hide')
+                    let message = e.response.data.message
+                    Swal.fire('Error!', message, 'error')
                     this.$Progress.fail()
                 })
         },

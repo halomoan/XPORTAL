@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateProfileRequest;
 
 class ProfileController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      *
@@ -58,7 +60,7 @@ class ProfileController extends Controller
      */
     public function edit(Profile $profile)
     {
-        //
+
     }
 
     /**

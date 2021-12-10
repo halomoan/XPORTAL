@@ -21,14 +21,17 @@ class RolePermissionSeeder extends Seeder
         // create permissions
         Permission::create(['name' => 'view invoices']);
         Permission::create(['name' => 'add invoices']);
+        Permission::create(['name' => 'edit invoices']);
         Permission::create(['name' => 'delete invoices']);
 
         Permission::create(['name' => 'view users']);
         Permission::create(['name' => 'add users']);
+        Permission::create(['name' => 'edit users']);
         Permission::create(['name' => 'delete users']);
 
         Permission::create(['name' => 'view roles']);
         Permission::create(['name' => 'add roles']);
+        Permission::create(['name' => 'edit roles']);
         Permission::create(['name' => 'delete roles']);
 
          // create roles and assign created permissions

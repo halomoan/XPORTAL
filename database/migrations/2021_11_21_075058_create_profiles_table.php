@@ -15,7 +15,7 @@ class CreateProfilesTable extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('org');
+            $table->string('billaddr');
             $table->bigInteger('user_id')->unsigned();
             $table->timestamps();
 
