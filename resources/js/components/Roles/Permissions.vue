@@ -157,7 +157,11 @@ export default {
                 }
 
                 this.all_permissions = _.groupBy(data, 'group')
-                this.noUpdate = this.role.name.toUpperCase() === 'ADMIN'
+                if (this.role.name) {
+                    this.noUpdate = this.role.name.toUpperCase() === 'ADMIN'
+                } else {
+                    this.noUpdate = false
+                }
                 this.$Progress.finish()
             })
         },
@@ -286,7 +290,11 @@ export default {
                     }
                 }
             }
-            this.noUpdate = this.role.name.toUpperCase() === 'ADMIN'
+            if (this.role.name) {
+                this.noUpdate = this.role.name.toUpperCase() === 'ADMIN'
+            } else {
+                this.noUpdate = false
+            }
         }
     },
 

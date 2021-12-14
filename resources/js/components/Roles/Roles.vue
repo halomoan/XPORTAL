@@ -224,10 +224,10 @@ export default {
     },
     methods: {
         ...mapActions(['getRolePermissions']),
-        getTableData(page) {
+        async getTableData(page) {
             let filter = ''
             this.$Progress.start()
-            axios
+            await axios
                 .get(this.pgRoles.uri + filter + '&page=' + page)
                 .then(({ data }) => {
                     this.roles = data.data

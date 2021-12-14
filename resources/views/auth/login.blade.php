@@ -7,12 +7,20 @@
                 <img src="{{ asset('img/USQ.jpg') }}" width="100%" alt="" />
             </div>
             <div class="col-lg-6 col-sm-6 border border-gray">
-                <div class="d-flex align-items-center flex-column h-100">
+                <div
+                    class="
+                        d-flex
+                        align-items-center
+                        justify-content-center
+                        flex-column
+                        h-100
+                    "
+                >
                     <div class="p-6">&nbsp;</div>
 
                     <div class="row">
                         <div class="col-12">
-                            <img src="{{ asset('img/logo.jpeg') }}" alt="" />
+                            <img src="{{ asset('img/logo-xl.png') }}" alt="" />
                         </div>
                     </div>
                     <div class="p-6">&nbsp;</div>
@@ -78,16 +86,16 @@
                                             type="checkbox" name="remember"
                                             id="remember"
                                             {{
-                                                old("remember")
-                                                    ? "checked"
-                                                    : ""
+                                                old('remember')
+                                                    ? 'checked'
+                                                    : ''
                                             }}>
 
                                             <label
                                                 class="form-check-label"
                                                 for="remember"
                                             >
-                                                {{ __("Remember Me") }}
+                                                {{ __('Remember Me') }}
                                             </label>
                                         </div>
                                     </div>
@@ -101,7 +109,7 @@
                                         mt-2
                                     "
                                 >
-                                    {{ __("Login") }}
+                                    {{ __('Login') }}
                                 </button>
                             </form>
                         </div>
@@ -113,7 +121,7 @@
                             class="btn btn-link"
                             href="{{ route('password.request') }}"
                         >
-                            {{ __("Forgot Your Password?") }}
+                            {{ __('Forgot Your Password?') }}
                         </a>
                         @endif
                     </div>

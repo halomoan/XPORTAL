@@ -113,14 +113,14 @@
 </template>
 
 <script>
-const USER_API_URI = '/api/manage/user?'
+const USER_API_URI = '/api/manage/user'
 
 export default {
     data() {
         return {
             users: {},
             pgUsers: {
-                uri: USER_API_URI,
+                uri: USER_API_URI + '?',
                 page: 1,
                 perpage: 10,
                 records: 0,
@@ -139,7 +139,7 @@ export default {
             let filter = ''
             this.$Progress.start()
             axios
-                .get(this.pgUsers.uri + filter + '&page=' + page)
+                .get(USER_API_URI + '?' + filter + '&page=' + page)
                 .then(({ data }) => {
                     this.users = data.data
                     this.pgUsers.records = data.total
@@ -152,13 +152,13 @@ export default {
             if (this.searchText) {
                 this.pgUsers.uri =
                     USER_API_URI +
-                    'qname=' +
+                    '?qname=' +
                     this.searchText +
                     '&qemail=' +
                     this.searchText +
                     '&FilterOR=true&page='
             } else {
-                this.pgUsers.uri = USER_API_URI + 'page=1'
+                this.pgUsers.uri = USER_API_URI + '?page=1'
             }
             this.$Progress.start()
             axios
@@ -183,6 +183,45 @@ export default {
         },
         editUser(id) {
             this.$router.push({ path: '/manage/userd', query: { userId: id } })
+        },
+        deleteUser(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                //Send request to the server
+                if (result.value) {
+                    axios
+                        .delete(USER_API_URI + '/' + id)
+                        .then((result) => {
+                            if (result.status === 200) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your user has been deleted.',
+                                    'success'
+                                )
+                                this.getTableData(this.pgUsers.page)
+                            }
+                        })
+                        .catch((error) => {
+                            let message = error.response.data.message
+                            if (message) {
+                                Swal.fire('Failed!', message, 'warning')
+                            } else {
+                                Swal.fire(
+                                    'Failed!',
+                                    'There is something wrong.',
+                                    'warning'
+                                )
+                            }
+                        })
+                }
+            })
         }
     },
 

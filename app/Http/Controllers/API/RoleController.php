@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \Spatie\Permission\Models\Role;
+use App\Http\Traits\NotifiyUserTrait;
 
 class RoleController extends Controller
 {
+    use NotifiyUserTrait;
 
     public function __construct()
     {
@@ -58,9 +60,15 @@ class RoleController extends Controller
             'name' => 'required|string|max:125|unique:roles'
         ]);
 
+        $user = Auth::user();
+        $this->AlertUser($user,'ROLES','A New Role Has Been Successfully Created');
+
+
         return Role::create([
             'name' => $request['name']
         ]);
+
+
     }
 
     /**

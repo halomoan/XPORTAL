@@ -21,6 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
 //Route::apiResources(['perm' => 'App\Http\Controllers\API\PermController']);
 
+Route::group(['middleware' => ['auth:sanctum']],function(){
+    Route::apiResources(['notification' => 'App\Http\Controllers\API\NotificationController']);
+});
+
 $MANAGE_PERMISSIONS = 'permission:view users|view roles|view dashboard';
 
 Route::group(['middleware' => ['auth:sanctum',$MANAGE_PERMISSIONS]],function(){

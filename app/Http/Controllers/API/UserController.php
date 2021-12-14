@@ -165,5 +165,12 @@ class UserController extends Controller
             $message = ['message' => 'You do not have the required authorization.'];
             return response()->json($message, 422);
         }
+
+        $user = User::findOrFail($id);
+
+        $user->delete();
+
+        return ['message' => 'User Deleted'];
+
     }
 }

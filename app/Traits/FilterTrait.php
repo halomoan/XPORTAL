@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use Illuminate\Pipeline\Pipeline;
 
-
 trait FilterTrait
 {
    public function scopeFilter($query, array $through)

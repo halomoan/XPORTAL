@@ -1,5 +1,9 @@
 const routes = [
     {
+        path: '/manage',
+        component: require('../components/Dashboard/Main.vue').default
+    },
+    {
         path: '/manage/users',
         component: require('../components/Users/Users.vue').default
     },
