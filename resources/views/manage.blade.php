@@ -36,7 +36,7 @@
         @endif @if( Auth::user()->unreadNotifications()->where('data->group',
         '=', 'INV')->count() > 0)
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
+        <a href="/manage" class="dropdown-item">
             <i class="fas fa-users mr-2"></i
             >{{ Auth::user()->unreadNotifications()->where('data->group', '=', 'INV')->count() }}
             Invoice(s)

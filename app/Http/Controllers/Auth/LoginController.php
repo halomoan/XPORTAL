@@ -58,10 +58,19 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             // if success login
+            $user = Auth::user();
 
-           return redirect()
-            ->intended(route('manage'))
-            ->with('status','You are Logged in as Admin!');
+            if ($user->hasRole("Admin")) {
+
+                return redirect()
+                    ->route('manage')
+                    ->with('status','You are Logged in as Admin!');
+            } else {
+
+                return redirect()
+                        ->route('home')
+                        ->with('status','You are Logged in as User!');
+            }
         }
 
          //keep track of login attempts from the user.

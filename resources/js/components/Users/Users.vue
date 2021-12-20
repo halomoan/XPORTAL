@@ -33,7 +33,7 @@
                                         <div class="input-group-append">
                                             <button
                                                 type="button"
-                                                class="btn btn-default"
+                                                class="btn"
                                                 @click="searchTable"
                                             >
                                                 <i class="fas fa-search"></i>

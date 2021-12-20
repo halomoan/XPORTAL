@@ -42,3 +42,13 @@ Route::group(['middleware' => ['verified',$MANAGE_PERMISSIONS]],function(){
 
 });
 
+$INVOICE_PERMISSIONS = 'permission:view invoices';
+
+Route::group(['middleware' => ['verified',$INVOICE_PERMISSIONS]],function(){
+    Route::group([
+            'prefix' => 'invoice',
+        ], function(){
+            Route::get('/', [App\Http\Controllers\InvoiceController::class, 'manage'])->name('invoice');
+        });
+
+});

@@ -31,7 +31,7 @@
                                 <div class="input-group-append">
                                     <button
                                         type="submit"
-                                        class="btn btn-default"
+                                        class="btn text-white"
                                         @click="searchTable"
                                     >
                                         <i class="fas fa-search"></i>
