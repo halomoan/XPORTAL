@@ -9,60 +9,29 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <div
-                    class="alert alert-danger alert-dismissible"
-                    v-for="(item, index) in alerts"
-                    :key="index"
+                <overlay-scrollbars
+                    :options="{ scrollbars: { autoHide: 'l' } }"
                 >
-                    <button
-                        type="button"
-                        class="close"
-                        @click="markAsRead(item.id)"
-                        aria-hidden="true"
-                    >
-                        ×
-                    </button>
-                    <h5><i class="icon fas fa-ban"></i> Alert!</h5>
-                    {{ item.data.message }}
-                </div>
-                <div class="alert alert-info alert-dismissible">
-                    <button
-                        type="button"
-                        class="close"
-                        data-dismiss="alert"
-                        aria-hidden="true"
-                    >
-                        ×
-                    </button>
-                    <h5><i class="icon fas fa-info"></i> Alert!</h5>
-                    Info alert preview. This alert is dismissable.
-                </div>
-                <div class="alert alert-warning alert-dismissible">
-                    <button
-                        type="button"
-                        class="close"
-                        data-dismiss="alert"
-                        aria-hidden="true"
-                    >
-                        ×
-                    </button>
-                    <h5>
-                        <i class="icon fas fa-exclamation-triangle"></i> Alert!
-                    </h5>
-                    Warning alert preview. This alert is dismissable.
-                </div>
-                <div class="alert alert-success alert-dismissible">
-                    <button
-                        type="button"
-                        class="close"
-                        @click="markAsRead(unreadNotification.id)"
-                        aria-hidden="true"
-                    >
-                        ×
-                    </button>
-                    <h5><i class="icon fas fa-check"></i> Alert!</h5>
-                    Success alert preview. This alert is dismissable.
-                </div>
+                    <div style="height: 24rem">
+                        <div
+                            class="alert alert-dismissible"
+                            v-for="(item, index) in alerts"
+                            :key="index"
+                            :class="['alert-' + item.data.type]"
+                        >
+                            <button
+                                type="button"
+                                class="close"
+                                @click="markAsRead(item.id)"
+                                aria-hidden="true"
+                            >
+                                ×
+                            </button>
+                            <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+                            {{ item.data.message }}
+                        </div>
+                    </div>
+                </overlay-scrollbars>
             </div>
             <!-- /.card-body -->
         </div>
@@ -83,7 +52,15 @@ export default {
             this.alerts = response.data
         },
         async markAsRead(id) {
-            console.log(id)
+            const idx = _.findIndex(this.alerts, function (o) {
+                return o.id === id
+            })
+
+            if (idx > -1) {
+                this.alerts.splice(idx, 1)
+
+                const response = await axios.delete(NOTIFY_API_URI + '/' + id)
+            }
         }
     },
     mounted() {

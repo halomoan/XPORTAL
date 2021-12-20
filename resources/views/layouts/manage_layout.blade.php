@@ -10,16 +10,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <title>AdminLTE 3 | Starter</title>
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <link
+            rel="stylesheet"
+            href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css"
+        />
         <link rel="stylesheet" href="/css/app.css" />
     </head>
-    <body class="hold-transition sidebar-mini">
+    <body class="hold-transition sidebar-mini layout-fixed">
         <div class="wrapper" id="app">
             <!-- Navbar -->
             <nav
-                class="
-                    main-header
-                    navbar navbar-expand navbar-white navbar-light
-                "
+                class="main-header navbar navbar-expand navbar-white navbar-light"
             >
                 <!-- Left navbar links -->
                 <ul class="navbar-nav">
@@ -134,12 +135,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     class="nav-link"
                                 >
                                     <i
-                                        class="
-                                            nav-icon
-                                            fas
-                                            fa-tachometer-alt
-                                            text-yellow
-                                        "
+                                        class="nav-icon fas fa-tachometer-alt text-yellow"
                                     ></i>
                                     <p>Dashboard</p>
                                 </router-link>
@@ -163,12 +159,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             class="nav-link"
                                         >
                                             <i
-                                                class="
-                                                    fas
-                                                    fa-users
-                                                    nav-icon
-                                                    text-cyan
-                                                "
+                                                class="fas fa-users nav-icon text-cyan"
                                             ></i>
                                             <p>Users</p>
                                         </router-link>
@@ -180,12 +171,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             class="nav-link"
                                         >
                                             <i
-                                                class="
-                                                    fas
-                                                    fa-certificate
-                                                    nav-icon
-                                                    text-pink
-                                                "
+                                                class="fas fa-certificate nav-icon text-pink"
                                             ></i>
                                             <p>Roles & Permissions</p>
                                         </router-link>
@@ -200,16 +186,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     class="nav-link"
                                 >
                                     <i
-                                        class="
-                                            fa fa-id-card
-                                            nav-icon
-                                            text-white
-                                        "
+                                        class="fa fa-id-card nav-icon text-white"
                                     ></i>
                                     <p>Profile</p>
                                 </router-link>
                             </li>
-                            <li class="nav-item"></li>
                             <li class="nav-item">
                                 <a
                                     class="nav-link"
@@ -217,12 +198,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     @click.prevent="logout"
                                 >
                                     <i
-                                        class="
-                                            nav-icon
-                                            fas
-                                            fa-power-off
-                                            text-red
-                                        "
+                                        class="nav-icon fas fa-power-off text-red"
                                     ></i>
                                     <p>
                                         {{ __('Logout') }}
@@ -305,5 +281,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- REQUIRED SCRIPTS -->
         <script src="/js/app.js"></script>
+        <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+        <script></script>
     </body>
 </html>

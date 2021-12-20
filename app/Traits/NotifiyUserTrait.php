@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Traits;
+namespace App\Traits;
 
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NotifyUser;
@@ -8,11 +8,11 @@ use App\Notifications\NotifyUser;
 trait NotifiyUserTrait
 {
 
-  const success = 'success';
-  const warning = 'warning';
-  const info = 'info';
-  const danger = 'danger';
-  const exclamation = 'exclamation';
+//   static $success = 'success';
+//   static $warning = 'warning';
+//   static $info = 'info';
+//   static $danger = 'danger';
+//   static $exclamation = 'exclamation';
 
 
   public function AlertUser($users, $group,$message,$type = 'info')

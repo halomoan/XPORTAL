@@ -52,6 +52,9 @@ Vue.filter('humanDate', function (date) {
 
 import Vue from 'vue'
 
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)
+
 import Swal from 'sweetalert2'
 window.Swal = Swal
 

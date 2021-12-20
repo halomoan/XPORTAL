@@ -10,7 +10,10 @@
         aria-expanded="false"
     >
         <i class="far fa-bell"></i>
-        <span class="badge badge-warning navbar-badge">15</span>
+        <span
+            class="badge badge-warning navbar-badge"
+            >{{ Auth::user()->unreadNotifications()->count() }}</span
+        >
     </a>
 
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -18,27 +21,33 @@
             >{{ Auth::user()->unreadNotifications()->count() }}
             Notifications</span
         >
+        @if( Auth::user()->unreadNotifications()->where('data->group', '=',
+        'MSG')->count() > 0)
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item">
             <i class="fas fa-envelope mr-2"></i>
             {{ Auth::user()->unreadNotifications()->where('data->group', '=', 'MSG')->count() }}
             new messages
-            <span class="float-right text-muted text-sm">3 mins</span>
+            <span
+                class="float-right text-muted text-sm"
+                >{{ \Carbon\Carbon::parse(Auth::user()->unreadNotifications()->where('data->group', '=', 'MSG')->latest('created_at')->first()->created_at)->diffForHumans() }}</span
+            >
         </a>
+        @endif @if( Auth::user()->unreadNotifications()->where('data->group',
+        '=', 'INV')->count() > 0)
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item">
             <i class="fas fa-users mr-2"></i
-            >{{ Auth::user()->unreadNotifications()->where('data->group', '=', 'ROLES')->count() }}
-            new roles created
-            <span class="float-right text-muted text-sm">12 hours</span>
+            >{{ Auth::user()->unreadNotifications()->where('data->group', '=', 'INV')->count() }}
+            Invoice(s)
+            <span class="float-right text-muted text-sm"
+                >>{{ \Carbon\Carbon::parse(Auth::user()->unreadNotifications()->where('data->group', '=', 'INV')->latest('created_at')->first()->created_at)->diffForHumans() }}</span
+            >
         </a>
+        @endif
+
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> 3 new reports
-            <span class="float-right text-muted text-sm">2 days</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item dropdown-footer"
+        <a href="/manage" class="dropdown-item dropdown-footer"
             >See All Notifications</a
         >
     </div>

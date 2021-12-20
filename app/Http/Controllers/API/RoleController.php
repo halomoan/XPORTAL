@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \Spatie\Permission\Models\Role;
-use App\Http\Traits\NotifiyUserTrait;
+use App\Traits\NotifiyUserTrait;
+use App\Notifications\NotificationEnum;
 
-class RoleController extends Controller
+class RoleController extends Controller implements NotificationEnum
 {
     use NotifiyUserTrait;
 
@@ -24,6 +25,18 @@ class RoleController extends Controller
      */
     public function index()
     {
+
+
+        // $user = Auth::user();
+        // $this->AlertUser($user,'INV','Invoices Is Ready For Viewing',self::INFO);
+
+        // $this->AlertUser($user,'INV','There was errror during Invoices import',self::ERROR);
+        // $this->AlertUser($user,'INV','There was warning during Invoices import',self::WARNING);
+        // $this->AlertUser($user,'INV','Successfully Import Invoices',self::SUCCESS);
+        // $this->AlertUser($user,'INV','Alert! Something was wrong during Import Invoices',self::ALERT);
+
+
+
 
         $request = request();
 
@@ -61,7 +74,7 @@ class RoleController extends Controller
         ]);
 
         $user = Auth::user();
-        $this->AlertUser($user,'ROLES','A New Role Has Been Successfully Created');
+        $this->AlertUser($user,'ROLES','A New Role Has Been Successfully Created',self::ERROR);
 
 
         return Role::create([

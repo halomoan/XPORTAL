@@ -6,9 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Notifications\NotificationEnum;
 
-
-class NotifyUser extends Notification implements ShouldQueue
+class NotifyUser extends Notification implements ShouldQueue, NotificationEnum
 {
     use Queueable;
 
@@ -17,7 +17,7 @@ class NotifyUser extends Notification implements ShouldQueue
 
     /**
      * Create a new notification instance.
-     *
+     *``
      * @return void
      */
     public function __construct($usermsg)
@@ -58,8 +58,22 @@ class NotifyUser extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
+
+        $title = 'Information';
+
+        switch($this->usermsg['type']){
+            case self::WARNING : $title = 'Warning'; break;
+            case self::SUCCESS : $title = 'Success'; break;
+            case self::INFO : $title = 'Information'; break;
+            case self::ERROR : $title = 'Error'; break;
+            case self::ALERT : $title = 'Alert!'; break;
+
+        }
+
         return [
             'group' => $this->usermsg['group'],
+            'type' => $this->usermsg['type'],
+            'title' => $title,
             'message'   =>  $this->usermsg['message'],
         ];
     }

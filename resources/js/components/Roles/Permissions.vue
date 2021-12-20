@@ -19,106 +19,140 @@
                 <!-- /.card-header -->
                 <div class="card-body table-responsive">
                     <div class="row">
-                        <table class="table table-borderless">
-                            <tr>
-                                <td v-for="value in ALL_VALUES" :key="value.id">
-                                    <div class="custom-control custom-checkbox">
-                                        <input
-                                            class="custom-control-input"
-                                            type="checkbox"
-                                            :id="value.id"
-                                            v-model="value.checked"
-                                            v-on:change="
-                                                setChildrenCheckBox(value.id)
+                        <div class="overlay-wrapper">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td
+                                        v-for="value in ALL_VALUES"
+                                        :key="value.id"
+                                    >
+                                        <div
+                                            class="
+                                                custom-control custom-checkbox
                                             "
-                                            :disabled="noUpdate"
-                                        />
-                                        <label
-                                            :for="value.id"
-                                            class="custom-control-label"
-                                            >{{ value.label }}</label
                                         >
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr
-                                v-for="(item, name, index) in all_permissions"
-                                :key="index"
-                            >
-                                <td>
-                                    <div class="custom-control custom-checkbox">
-                                        <input
-                                            class="custom-control-input"
-                                            type="checkbox"
-                                            :id="'view' + item[0].id"
-                                            :value="item[0].id"
-                                            v-model="item[0].checked"
-                                            v-on:change="setALLCheckBox(0)"
-                                            :disabled="noUpdate"
-                                        />
-                                        <label
-                                            :for="'view' + item[0].id"
-                                            class="custom-control-label"
-                                            >{{ item[0].name }}</label
+                                            <input
+                                                class="custom-control-input"
+                                                type="checkbox"
+                                                :id="value.id"
+                                                v-model="value.checked"
+                                                v-on:change="
+                                                    setChildrenCheckBox(
+                                                        value.id
+                                                    )
+                                                "
+                                                :disabled="noUpdate"
+                                            />
+                                            <label
+                                                :for="value.id"
+                                                class="custom-control-label"
+                                                >{{ value.label }}</label
+                                            >
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr
+                                    v-for="(
+                                        item, name, index
+                                    ) in all_permissions"
+                                    :key="index"
+                                >
+                                    <td>
+                                        <div
+                                            class="
+                                                custom-control custom-checkbox
+                                            "
                                         >
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="custom-control custom-checkbox">
-                                        <input
-                                            class="custom-control-input"
-                                            type="checkbox"
-                                            :id="'add' + item[1].id"
-                                            :value="item[1].id"
-                                            v-model="item[1].checked"
-                                            v-on:change="setALLCheckBox(1)"
-                                            :disabled="noUpdate"
-                                        />
-                                        <label
-                                            :for="'add' + item[1].id"
-                                            class="custom-control-label"
-                                            >{{ item[1].name }}</label
+                                            <input
+                                                class="custom-control-input"
+                                                type="checkbox"
+                                                :id="'view' + item[0].id"
+                                                :value="item[0].id"
+                                                v-model="item[0].checked"
+                                                v-on:change="setALLCheckBox(0)"
+                                                :disabled="noUpdate"
+                                            />
+                                            <label
+                                                :for="'view' + item[0].id"
+                                                class="custom-control-label"
+                                                >{{ item[0].name }}</label
+                                            >
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div
+                                            class="
+                                                custom-control custom-checkbox
+                                            "
                                         >
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="custom-control custom-checkbox">
-                                        <input
-                                            class="custom-control-input"
-                                            type="checkbox"
-                                            :id="'edit' + item[2].id"
-                                            :value="item[2].id"
-                                            v-model="item[2].checked"
-                                            v-on:change="setALLCheckBox(2)"
-                                            :disabled="noUpdate"
-                                        />
-                                        <label
-                                            :for="'edit' + item[2].id"
-                                            class="custom-control-label"
-                                            >{{ item[2].name }}</label
+                                            <input
+                                                class="custom-control-input"
+                                                type="checkbox"
+                                                :id="'add' + item[1].id"
+                                                :value="item[1].id"
+                                                v-model="item[1].checked"
+                                                v-on:change="setALLCheckBox(1)"
+                                                :disabled="noUpdate"
+                                            />
+                                            <label
+                                                :for="'add' + item[1].id"
+                                                class="custom-control-label"
+                                                >{{ item[1].name }}</label
+                                            >
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div
+                                            class="
+                                                custom-control custom-checkbox
+                                            "
                                         >
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="custom-control custom-checkbox">
-                                        <input
-                                            class="custom-control-input"
-                                            type="checkbox"
-                                            :id="'delete' + item[3].id"
-                                            :value="item[3].id"
-                                            v-model="item[3].checked"
-                                            v-on:change="setALLCheckBox(3)"
-                                            :disabled="noUpdate"
-                                        />
-                                        <label
-                                            :for="'delete' + item[3].id"
-                                            class="custom-control-label"
-                                            >{{ item[3].name }}</label
+                                            <input
+                                                class="custom-control-input"
+                                                type="checkbox"
+                                                :id="'edit' + item[2].id"
+                                                :value="item[2].id"
+                                                v-model="item[2].checked"
+                                                v-on:change="setALLCheckBox(2)"
+                                                :disabled="noUpdate"
+                                            />
+                                            <label
+                                                :for="'edit' + item[2].id"
+                                                class="custom-control-label"
+                                                >{{ item[2].name }}</label
+                                            >
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div
+                                            class="
+                                                custom-control custom-checkbox
+                                            "
                                         >
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                                            <input
+                                                class="custom-control-input"
+                                                type="checkbox"
+                                                :id="'delete' + item[3].id"
+                                                :value="item[3].id"
+                                                v-model="item[3].checked"
+                                                v-on:change="setALLCheckBox(3)"
+                                                :disabled="noUpdate"
+                                            />
+                                            <label
+                                                :for="'delete' + item[3].id"
+                                                class="custom-control-label"
+                                                >{{ item[3].name }}</label
+                                            >
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="overlay" v-if="inprogress">
+                                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pl-2">Loading...</div>
+                            </div>
+                        </div>
+                        <!-- /.overlay-wrapper -->
                     </div>
                 </div>
                 <!-- /.card-body -->
@@ -142,12 +176,14 @@ export default {
                 { id: 'EDIT_ALL', label: 'Edit: ALL', checked: false },
                 { id: 'DELETE_ALL', label: 'Delete: ALL', checked: false }
             ],
-            noUpdate: false
+            noUpdate: false,
+            inprogress: false
         }
     },
     methods: {
         getTableData() {
             this.$Progress.start()
+            this.inprogress = true
             axios.get(PERM_API_URI).then(({ data }) => {
                 for (var i = 0; i < data.length; i++) {
                     const keyvals = data[i].name.split(' ')
@@ -162,6 +198,7 @@ export default {
                 } else {
                     this.noUpdate = false
                 }
+                this.inprogress = false
                 this.$Progress.finish()
             })
         },
@@ -235,10 +272,11 @@ export default {
                 .value()
 
             const data = { role: this.role.id, permissions }
-
+            this.inprogress = true
             axios
                 .post(PERM_API_URI, data)
                 .then(() => {
+                    this.inprogress = false
                     Swal.fire(
                         'Updated!',
                         `Role  ${this.role.name} has been updated.`,
@@ -246,6 +284,7 @@ export default {
                     )
                 })
                 .catch((error) => {
+                    this.inprogress = false
                     Swal.fire(
                         'Error!',
                         `Error occurred on Role  ${this.role.name}.`,

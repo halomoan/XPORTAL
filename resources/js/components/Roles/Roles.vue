@@ -150,45 +150,57 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form
-                        @submit.prevent="editmode ? updateRole() : createRole()"
-                    >
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="role-name" class="col-form-label"
-                                    >Name:</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    :class="{
-                                        'is-invalid': form.errors.has('name')
-                                    }"
-                                    id="role-name"
-                                    v-model="form.name"
-                                />
-                                <has-error
-                                    :form="form"
-                                    field="name"
-                                ></has-error>
+                    <div class="overlay-wrapper">
+                        <form
+                            @submit.prevent="
+                                editmode ? updateRole() : createRole()
+                            "
+                        >
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label
+                                        for="role-name"
+                                        class="col-form-label"
+                                        >Name:</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        :class="{
+                                            'is-invalid':
+                                                form.errors.has('name')
+                                        }"
+                                        id="role-name"
+                                        v-model="form.name"
+                                    />
+                                    <has-error
+                                        :form="form"
+                                        field="name"
+                                    ></has-error>
+                                </div>
                             </div>
-                        </div>
-                        <!-- /.modal-body -->
+                            <!-- /.modal-body -->
 
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                @click="closeModal"
-                            >
-                                Close
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                Save changes
-                            </button>
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    @click="closeModal"
+                                >
+                                    Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Save changes
+                                </button>
+                            </div>
+                            <!-- /.modal-footer -->
+                        </form>
+                        <div class="overlay" v-if="inprogress">
+                            <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                            <div class="text-bold pl-2">Loading...</div>
                         </div>
-                        <!-- /.modal-footer -->
-                    </form>
+                    </div>
+                    <!-- /.overlay-wrapper -->
                 </div>
             </div>
         </div>
@@ -219,7 +231,8 @@ export default {
                 id: '',
                 name: ''
             }),
-            searchText: ''
+            searchText: '',
+            inprogress: false
         }
     },
     methods: {
@@ -239,6 +252,7 @@ export default {
         },
         createRole() {
             this.$Progress.start()
+            this.inprogress = true
             this.form
                 .post(ROLE_API_URI)
                 .then(() => {
@@ -249,16 +263,19 @@ export default {
                         title: 'User Created in successfully'
                     })
                     this.$Progress.finish()
+                    this.inprogress = false
                 })
                 .catch((e) => {
                     $('#RoleModal').modal('hide')
                     let message = e.response.data.message
                     Swal.fire('Error!', message, 'error')
                     this.$Progress.fail()
+                    this.inprogress = false
                 })
         },
         updateRole() {
             this.$Progress.start()
+            this.inprogress = true
             this.form
                 .put(ROLE_API_URI + '/' + this.form.id)
                 .then(() => {
@@ -270,9 +287,11 @@ export default {
                         'success'
                     )
                     this.$Progress.finish()
+                    this.inprogress = false
                     Fire.$emit('AfterCreated')
                 })
                 .catch(() => {
+                    this.inprogress = false
                     this.$Progress.fail()
                 })
         },

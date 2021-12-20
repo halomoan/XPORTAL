@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class NotificationController extends Controller
 {
 
-     function __construct()
+    function __construct()
     {
         $this->middleware(['auth']);
     }
@@ -81,6 +81,11 @@ class NotificationController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        $user = Auth::user();
+
+        $user->notifications()->where('id', $id)->delete();
+
+        return ['message' => 'Notification Deleted'];
     }
 }

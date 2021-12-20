@@ -12,8 +12,6 @@
 import Alert from './Alert.vue'
 export default {
     components: { Alert },
-    mounted() {
-        console.log('Component mounted.')
-    }
+    mounted() {}
 }
 </script>

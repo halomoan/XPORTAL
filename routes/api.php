@@ -29,8 +29,7 @@ $MANAGE_PERMISSIONS = 'permission:view users|view roles|view dashboard';
 
 Route::group(['middleware' => ['auth:sanctum',$MANAGE_PERMISSIONS]],function(){
     Route::group([
-            'prefix' => 'manage',
-            'as' => 'manage'
+            'prefix' => 'manage'
         ], function(){
             //admin Route
             Route::apiResources(['user' => 'App\Http\Controllers\API\UserController']);
